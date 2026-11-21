@@ -1,6 +1,6 @@
 # Frontend — Bốn Mùa Gió
 
-React + Vite user interface. `public/images/` uses the original numbered photographs from `/home/quockhanhdev/Downloads/Camera imports`, with slide 17 from the supplemental import, in numeric order. Story text is positioned over each photo in CSS to follow the Canva composition reference; the Canva exports themselves are not used. Free-response forms appear on slides 2, 3, and 16; yes/no forms appear on slides 10, 14, 15, and 21. Draft answers are stored in the browser and submitted to the Apps Script endpoint from the final slide.
+React + Vite user interface. `public/images/` contains optimized WebP copies of the 21 numbered photos, in numeric order. The set is resized for the slide viewport and reduced from about 19 MB to about 3.7 MB; the frontend preloads adjacent slides. Story text is positioned over each photo in CSS to follow the Canva composition reference; the Canva exports themselves are not used. Free-response forms appear on slides 2, 3, and 16; yes/no forms appear on slides 10, 14, 15, and 21. Draft answers are stored in the browser and submitted to the Apps Script endpoint from the final slide.
 
 From this folder run:
 

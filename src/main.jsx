@@ -2,16 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-// Use the original numbered photos; the narrative text is laid out over them below.
-const slideExtensions = {
-  1: 'png', 2: 'jpg', 3: 'jpg', 4: 'jpg', 5: 'jpg', 6: 'jpg', 7: 'jpg',
-  8: 'jpg', 9: 'jpg', 10: 'jpg', 11: 'JPG', 12: 'jpg', 13: 'jpg',
-  14: 'png', 15: 'jpg', 16: 'jpg', 17: 'jpg', 18: 'jpg', 19: 'jpg',
-  20: 'JPG', 21: 'jpg',
-};
-const slides = Object.entries(slideExtensions).map(([number, extension]) => ({
-  number: Number(number),
-  src: `/images/${number}.${extension}`,
+// Optimized WebP files keep the numbered slide sequence while reducing downloads.
+const slides = Array.from({ length: 21 }, (_, index) => ({
+  number: index + 1,
+  src: `/images/${index + 1}.webp`,
 }));
 
 const slideCopy = {
@@ -61,6 +55,15 @@ function App() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
+  }, [step]);
+
+  useEffect(() => {
+    [step - 1, step + 1].forEach((index) => {
+      if (index >= 0 && index < slides.length) {
+        const image = new Image();
+        image.src = slides[index].src;
+      }
+    });
   }, [step]);
 
   async function next() {
@@ -134,7 +137,7 @@ function App() {
       </header>
 
       <section className="stage" id="top" aria-label={`Trang ${step + 1} trên ${slides.length}`}>
-        <img key={`image-${current.number}`} className={`slide-image slide-image-${current.number} image-morph`} src={current.src} alt={`Ảnh kể chuyện BMG, trang ${current.number}`} />
+        <img key={`image-${current.number}`} className={`slide-image slide-image-${current.number} image-morph`} src={current.src} alt={`Ảnh kể chuyện BMG, trang ${current.number}`} loading="eager" decoding="async" fetchPriority="high" />
         <div className="image-shade" />
         <section key={`copy-${current.number}`} className={`story-overlay story-slide-${current.number} copy-morph`} aria-label={`Nội dung trang ${current.number}`}>
           <p className="story-copy">
