@@ -33,7 +33,8 @@ const slideCopy = {
 };
 
 const freeResponseSlides = [2, 3, 16];
-const yesNoSlides = [10, 14, 15, 21];
+const yesNoSlides = [21];
+const responseSlides = [...freeResponseSlides, ...yesNoSlides];
 const submitUrl = 'https://script.google.com/macros/s/AKfycby6wyvL4X5CqKHhdziV2W4Ktex_VSdj1hpDbb4cfvU_mtRWQiOjBCC0Bhebxwo-iZkp/exec';
 
 function App() {
@@ -76,7 +77,7 @@ function App() {
     setValidationError('');
     if (!isLast) setStep((n) => n + 1);
     else {
-      const missingSlide = [...freeResponseSlides, ...yesNoSlides].find((slide) => !answers[slide]?.trim());
+      const missingSlide = responseSlides.find((slide) => !answers[slide]?.trim());
       if (missingSlide) {
         setStep(slides.findIndex((slide) => slide.number === missingSlide));
         setValidationError(freeResponseSlides.includes(missingSlide)
@@ -91,7 +92,10 @@ function App() {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'submit', answers }),
+          body: JSON.stringify({
+            action: 'submit',
+            answers: Object.fromEntries(responseSlides.map((slide) => [slide, answers[slide]])),
+          }),
         });
         localStorage.removeItem('bmg-story-answers');
         setSubmitted(true);
@@ -132,7 +136,7 @@ function App() {
     <main className="experience">
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Bốn Mùa Gió — về đầu trang"><span className="brand-mark" aria-hidden="true">✳</span><span>Bốn Mùa Gió</span></a>
-        <div className="story-label">MỘT MIỀN KÝ ỨC <span>—</span> MỘT PHÚT HIỂU LÒNG</div>
+        <div className="story-label">MỘT MIỀN KÝ ỨC <span>—</span> MỘT KHOẢNG LẶNG <span>—</span> MỘT PHÚT HIỂU LÒNG</div>
         <div className="counter">{String(step + 1).padStart(2, '0')} <span>/ {slides.length}</span></div>
       </header>
 
@@ -157,10 +161,16 @@ function App() {
           {yesNoSlides.includes(current.number) && (
             <fieldset className="yes-no-field" required>
               <legend>Bạn chọn giúp Gió nhé</legend>
-              {['Có', 'Không'].map((choice) => (
-                <label className={`choice-option ${answers[current.number] === choice ? 'selected' : ''}`} key={choice}>
-                  <input type="radio" name={`answer-${current.number}`} value={choice} checked={answers[current.number] === choice} onChange={() => changeAnswer(choice)} />
-                  <span>{choice}</span>
+              {(current.number === 21
+                ? [
+                    { value: 'Có', label: 'Gió còn thổi, mình còn đi!' },
+                    { value: 'Không', label: 'Hẹn Gió lần sau!' },
+                  ]
+                : [{ value: 'Có', label: 'Có' }, { value: 'Không', label: 'Không' }]
+              ).map((choice) => (
+                <label className={`choice-option ${answers[current.number] === choice.value ? 'selected' : ''}`} key={choice.value}>
+                  <input type="radio" name={`answer-${current.number}`} value={choice.value} checked={answers[current.number] === choice.value} onChange={() => changeAnswer(choice.value)} />
+                  <span>{choice.label}</span>
                 </label>
               ))}
             </fieldset>
